@@ -11,7 +11,7 @@ uses
   function ParseThumbsFromPage(const ASource: string): TFapelloThumbAr;
   function ParseFeedItemsFromPage(const ASource: string): TFapelloFeedItemAr;
   function ParseAuthorPage(const ASource: string): TFapelloAuthorPage;
-  function ParseFullPage(const ASource: string): TFapelloContenPage;
+  function ParseFullPage(const ASource: string): TFapelloContentPage;
 
   function ParseAuthorUsername(AUrl: string): string;
 
@@ -61,7 +61,7 @@ begin
   Result := [];
   Doc := ParserHTML(ASource);
   LItems := Doc.FindX('body/*[@class="bg-white"]');
-  writeln(Litems.Count.ToString);
+
   for LItem in LItems do begin
     var LNew := TFapelloFeedItem.New;
     var LTmps := LItem.FindX('div/div/a');
@@ -80,6 +80,12 @@ begin
     LTmps := LItem.FindX('//*[@class="img_feed"]');
     for LTmp in LTmps do
       LNew.Thumbnails := LNew.Thumbnails + [LTmp.Attributes['src']];
+
+    if Length(Lnew.Thumbnails) < 1 then begin
+      LTmps := LItem.FindX('//*[@class="uk-align-center"]/img');
+      for LTmp in LTmps do
+      LNew.Thumbnails := LNew.Thumbnails + [LTmp.Attributes['src']];
+    end;
 
     Result := Result + [LNew];
   end;
@@ -134,7 +140,7 @@ begin
   Result.Content := ParseThumbsFromNode(LContent);
 end;
 
-function ParseFullPage(const ASource: string): TFapelloContenPage;
+function ParseFullPage(const ASource: string): TFapelloContentPage;
 begin
   Result := ParseFeedItemsFromPage(ASource)[0];
 end;

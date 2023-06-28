@@ -9,9 +9,13 @@ uses
   Classes,
   Net.HttpClient,
   Net.HttpClientComponent,
-  Fapello.Scraper in '..\source\Fapello.Scraper.pas',
   Fapello.Parser in '..\source\Fapello.Parser.pas',
+  Fapello.Scraper in '..\source\Fapello.Scraper.pas',
   Fapello.Types in '..\source\Fapello.Types.pas';
+
+const
+  OFFLINE_PARSER_TEST: boolean = False;
+  ONLINE_SCRAPER_TEST: boolean = True;
 
 function NewScraper: TFapelloScraper;
 begin
@@ -119,6 +123,20 @@ begin
   except On E: exception do
     Writeln(E.ToString);
   end;
+
+  try
+    Write('GetFullContent: ');
+    LTmp := FileContent('full.html');
+    var Full: TFapelloContentPage := ParseFullPage(Ltmp);
+    if length(Full.Thumbnails) > 0 then begin
+      Writeln('OK');
+      PrintFeedItem(Full);
+    end else
+      Writeln('ERROR');
+  except On E: exception do
+    Writeln(E.ToString);
+  end;
+
 end;
 
 var
@@ -126,44 +144,49 @@ var
 begin
   try
 
-    TestParserOffline;
-    Writeln('Parser tests finished.');
-    Readln;
+    if OFFLINE_PARSER_TEST then begin
+      TestParserOffline;
+      Writeln('Parser tests finished.');
+      Readln;
+    end;
 
-    Fapello := NewScraper;
+    if ONLINE_SCRAPER_TEST then begin
 
-    Write('GetFeedItems: ');
-    var Feed := Fapello.GetFeedItems(1);
-    if Length(Feed) > 0 then begin
-      Writeln('OK: ' + Length(Feed).ToString + ' items.');
-      PrintFeedItems(Feed);
-    end else
-      Writeln('ERROR');
+      Fapello := NewScraper;
 
-    Write('GetAuthorPage: ');
-    var AuthorPage := Fapello.GetAuthorPage('vinnegal');
-    if Length(AuthorPage.Author.Url) > 0 then begin
-      Writeln('OK: ' + Length(AuthorPage.Content).ToString + ' items.');
-      PrintAuthorPage(AuthorPage);
-    end else
-      Writeln('ERROR');
+      Write('GetFeedItems: ');
+      var Feed := Fapello.GetFeedItems(1);
+      if Length(Feed) > 0 then begin
+        Writeln('OK: ' + Length(Feed).ToString + ' items.');
+        PrintFeedItems(Feed);
+      end else
+        Writeln('ERROR');
 
-    Write('GetAuthorContent: ');
-    var Content := Fapello.GetAuthorContent(Feed[0].Author, 1);
-    if length(Content) > 0 then begin
-      Writeln('OK: ' + Length(Content).ToString + ' items.');
-      PrintThumbs(Content);
-    end else
-      Writeln('ERROR');
+      Write('GetAuthorPage: ');
+      var AuthorPage := Fapello.GetAuthorPage('vinnegal');
+      if Length(AuthorPage.Author.Url) > 0 then begin
+        Writeln('OK: ' + Length(AuthorPage.Content).ToString + ' items.');
+        PrintAuthorPage(AuthorPage);
+      end else
+        Writeln('ERROR');
 
-    Write('GetFullContent: ');
-    var Full: TFapelloContenPage := Fapello.GetFullContent(Content[0]);
-    if length(Full.Thumbnails) > 0 then begin
-      Writeln('OK');
-      PrintFeedItem(Full);
-    end else
-      Writeln('ERROR');
+      Write('GetAuthorContent: ');
+      var Content := Fapello.GetAuthorContent(Feed[0].Author, 1);
+      if length(Content) > 0 then begin
+        Writeln('OK: ' + Length(Content).ToString + ' items.');
+        PrintThumbs(Content);
+      end else
+        Writeln('ERROR');
 
+      Write('GetFullContent: ');
+      var Full: TFapelloContentPage := Fapello.GetFullContent(Content[0]);
+      if length(Full.Thumbnails) > 0 then begin
+        Writeln('OK');
+        PrintFeedItem(Full);
+      end else
+        Writeln('ERROR');
+
+    end;
 
     Readln;
 

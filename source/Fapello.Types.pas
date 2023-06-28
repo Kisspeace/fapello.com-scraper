@@ -40,7 +40,8 @@ type
     class function New: TFapelloAuthorPage; static;
   end;
 
-  TFapelloContenPage = TFapelloFeedItem;
+  TFapelloContentPage = TFapelloFeedItem;
+  { TFapelloContentPage.Thumbnails[0] - is a full sized image url }
 
 implementation
 

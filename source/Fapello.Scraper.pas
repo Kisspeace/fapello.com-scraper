@@ -23,8 +23,8 @@ type
       function GetAuthorPage(AUsername: string): TFapelloAuthorPage; overload;
       function GetAuthorPage(AAuthor: TFapelloAuthor): TFapelloAuthorPage; overload;
       function GetFeedItems(APage: cardinal = 1): TFapelloFeedItemAr;
-      function GetFullContent(AUrl: string): TFapelloContenPage; overload;
-      function GetFullContent(AThumb: TFapelloThumb): TFapelloContenPage; overload;
+      function GetFullContent(AUrl: string): TFapelloContentPage; overload;
+      function GetFullContent(AThumb: TFapelloThumb): TFapelloContentPage; overload;
       {* --------- *}
       property Host: string read FHost write FHost;
       constructor Create;
@@ -75,12 +75,12 @@ begin
 end;
 
 function TFapelloScraper.GetFullContent(
-  AThumb: TFapelloThumb): TFapelloContenPage;
+  AThumb: TFapelloThumb): TFapelloContentPage;
 begin
   Result := Self.GetFullContent(AThumb.FullPageUrl);
 end;
 
-function TFapelloScraper.GetFullContent(AUrl: string): TFapelloContenPage;
+function TFapelloScraper.GetFullContent(AUrl: string): TFapelloContentPage;
 var
   LContent: string;
 begin
